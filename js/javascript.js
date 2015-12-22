@@ -28,8 +28,9 @@ var charmander = {
 		accuracy: .65
 	}]
 };
+
 var pikachu = {
-	name: "pikachu",
+	name: "Pikachu",
 	health: 100,
 	lvl: 9,
 	effect: null,
@@ -58,3 +59,84 @@ var pikachu = {
 		accuracy: .55
 	}]
 };
+
+var currentState;
+var cpuPokemon;
+var playerPokemon;
+
+var cpuTurn = {
+	play: function() {
+		var randomMove = Math.floor(Math.random() * 4);
+		var currentCPUMove = cpuPokemon.moves[randomMove];
+
+		var setupCPUField = function() {
+			$("#chat-text").text("What will " + cpuPokemon.name + " do?");
+			prepareToAttack();
+		};
+
+		var prepareToAttack = function() {
+			$("#pikachu-img").animate({
+				top: "-=25",
+			},200,function() {
+				$("#pikachu-img").animate({
+					top: "+=25",
+				},200)
+			});
+			getAccuracy();
+		};
+
+		var getAccuracy = function() {
+			var setAccuracy = Math.random();
+			if (setAccuracy <= currentCPUMove.accuracy) {
+				$("#chat-text").text(cpuPokemon.name + " used " + currentCPUMove.name + "!");
+				getMoveType();
+			} else {
+				$("#chat-text").text(cpuPokemon.name + " missed with " + currentCPUMove.name + "!");
+				currentState = playerTurn;
+				setTimeout(loop, 1500);
+			}
+		};
+
+		var getMoveType = function() {
+			if (currentCPUMove.type == "Attack") {
+				setTimeout(attackingMove,1500);
+			} else {
+				setTimeout(defensiveMove,1500);
+			}
+		};
+		setupCPUField();
+	}
+};
+
+var playerTurn = {
+	play: function() {
+		var randomMove = Math.floor(Math.random() * 4);
+		var currentPlayerMove = playerPokemon.moves[randomMove];
+
+		var setupPlayerField = function() {
+			$("#chat-text").text("What will " + playerPokemon.name + " do?");
+		};
+	}
+};
+
+var loop = function() {
+	if(cpuPokemon.health <= 0 || playerPokemon.health <= 0) {
+		$("#game-over").removeClass("hide");
+		console.log("Game Over");
+	} else {
+		currentState.play();
+	}
+};
+
+var init = function() {
+	cpuPokemon = pikachu;
+	playerPokemon = charmander;
+	$("#cpu-name").text(cpuPokemon.name);
+	$("#cpu-lvl").text("lvl " + cpuPokemon.lvl);
+	$("#user-name").text(playerPokemon.name);
+	$("#user-lvl").text("lvl " + playerPokemon.lvl);
+	currentState = cpuTurn;
+	loop();
+};
+
+init();
