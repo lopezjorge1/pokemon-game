@@ -71,7 +71,7 @@ var cpuTurn = {
 
 		var setupCPUField = function() {
 			$("#chat-text").text("What will " + cpuPokemon.name + " do?");
-			prepareToAttack();
+			setTimeout(prepareToAttack,1500);
 		};
 
 		var prepareToAttack = function() {
@@ -98,11 +98,32 @@ var cpuTurn = {
 		};
 
 		var getMoveType = function() {
+			showMoveAnimation();
 			if (currentCPUMove.type == "Attack") {
 				setTimeout(attackingMove,1500);
 			} else {
 				setTimeout(defensiveMove,1500);
 			}
+		};
+
+		var showMoveAnimation = function() {
+			$("#attack-img").addClass("cpu-attack-img");
+			$("#attack-img").removeClass("hide");
+			$("#attack-img").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100);
+		};
+
+		var attackingMove = function() {
+			$("#attack-img").addClass("hide");
+			$("#attack-img").removeClass("cpu-attack-img");
+			if (!cpuPokemon.effect) {
+				playerPokemon.health -= currentCPUMove.power
+			} else {
+				playerPokemon.health -= (currentCPUMove.power * playerPokemon.effect);
+				playerPokemon.effect = null;
+			}
+			$("#user-health-bar").css("width", playerPokemon.health + "%");
+			currentState = playerTurn;
+			loop();
 		};
 		setupCPUField();
 	}
